@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flash_chat/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -173,27 +174,34 @@ class MessageBubble extends StatelessWidget {
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Material(
-            borderRadius: isMe
-                ? BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  )
-                : BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+          GestureDetector(
+            onLongPress: () {
+              if (isMe) {
+                _showDialog(context);
+              }
+            },
+            child: Material(
+              borderRadius: isMe
+                  ? BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    )
+                  : BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+              elevation: 5.0,
+              color: isMe ? Colors.lightBlueAccent : Colors.white,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: isMe ? Colors.white : Colors.black,
                   ),
-            elevation: 5.0,
-            color: isMe ? Colors.lightBlueAccent : Colors.white,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: isMe ? Colors.white : Colors.black,
                 ),
               ),
             ),
@@ -206,4 +214,34 @@ class MessageBubble extends StatelessWidget {
       ),
     );
   }
+}
+
+_showDialog(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+            title: Text("Delete Messsage"),
+            content: Text("Are you sure you want to delete the message."),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text("CANCEL"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text("OK"),
+                onPressed: () {
+                  // final collection =
+                  //     FirebaseFirestore.instance.collection('messages');
+                  // collection
+                  //     .doc('id') // <-- Doc ID to be deleted.
+                  //     .delete() // <-- Delete
+                  //     .then((_) => print('Deleted'))
+                  //     .catchError((error) => print('Delete failed: $error'));
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ));
 }
