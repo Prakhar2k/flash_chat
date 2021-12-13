@@ -137,12 +137,16 @@ class MessageStream extends StatelessWidget {
           final messageSender = message['sender'];
           final messageTime = message['time'] as Timestamp;
           final currentUser = loggedInUser.email;
+          // print(message['text'].toString());
+          // print(message.id.toString());
+          final messageId = message.id;
 
           final messageWidget = MessageBubble(
             sender: messageSender,
             text: messageText,
             isMe: currentUser == messageSender,
             time: messageTime,
+            id: messageId,
           );
           messageWidgets.add(messageWidget);
         }
@@ -159,12 +163,13 @@ class MessageStream extends StatelessWidget {
 }
 
 class MessageBubble extends StatelessWidget {
-  MessageBubble({this.sender, this.text, this.isMe, this.time});
+  MessageBubble({this.sender, this.text, this.isMe, this.time, this.id});
 
   final String sender;
   final String text;
   final bool isMe;
   final Timestamp time;
+  final String id;
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +182,7 @@ class MessageBubble extends StatelessWidget {
           GestureDetector(
             onLongPress: () {
               if (isMe) {
-                _showDialog(context);
+                _showDialog(context,id);
               }
             },
             child: Material(
@@ -216,7 +221,7 @@ class MessageBubble extends StatelessWidget {
   }
 }
 
-_showDialog(BuildContext context) {
+_showDialog(BuildContext context,String id) {
   showDialog(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
@@ -232,13 +237,13 @@ _showDialog(BuildContext context) {
               CupertinoDialogAction(
                 child: Text("OK"),
                 onPressed: () {
-                  // final collection =
-                  //     FirebaseFirestore.instance.collection('messages');
-                  // collection
-                  //     .doc('id') // <-- Doc ID to be deleted.
-                  //     .delete() // <-- Delete
-                  //     .then((_) => print('Deleted'))
-                  //     .catchError((error) => print('Delete failed: $error'));
+                  final collection =
+                      _firestore.collection('messages');
+                  collection
+                      .doc(id) // <-- Doc ID to be deleted.
+                      .delete() // <-- Delete
+                      .then((_) => print('Deleted'))
+                      .catchError((error) => print('Delete failed: $error'));
                   Navigator.of(context).pop();
                 },
               ),
